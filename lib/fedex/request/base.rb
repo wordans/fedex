@@ -41,12 +41,13 @@ module Fedex
       # @param [String] mode - [development/production]
       #
       # return a Fedex::Request::Base object
+
       def initialize(credentials, options={})
         requires!(options, :shipper, :recipient, :packages, :service_type)
         @credentials = credentials
         @shipper, @recipient, @packages, @service_type, @customs_clearance, @debug = options[:shipper], options[:recipient], options[:packages], options[:service_type], options[:customs_clearance], options[:debug]
         @debug = ENV['DEBUG'] == 'true'
-        @shipping_options =  options[:shipping_options] ||={}
+        @shipping_options = options[:shipping_options] ||= {}
       end
 
       # Sends post request to Fedex web service and parse the response.
@@ -81,6 +82,7 @@ module Fedex
       # Add Version to xml request, using the latest version V10 Sept/2011
       def add_version(xml)
         xml.Version{
+
           xml.ServiceId service[:id]
           xml.Major     service[:version]
           xml.Intermediate 0
@@ -90,7 +92,9 @@ module Fedex
 
       # Add information for shipments
       def add_requested_shipment(xml)
+
         xml.RequestedShipment{
+
           xml.DropoffType @shipping_options[:drop_off_type] ||= "REGULAR_PICKUP"
           xml.ServiceType service_type
           xml.PackagingType @shipping_options[:packaging_type] ||= "YOUR_PACKAGING"
@@ -105,16 +109,22 @@ module Fedex
 
       # Add shipper to xml request
       def add_shipper(xml)
+
         xml.Shipper{
+
           xml.Contact{
+
             xml.PersonName @shipper[:name]
             xml.CompanyName @shipper[:company]
             xml.PhoneNumber @shipper[:phone_number]
           }
           xml.Address {
+
             Array(@shipper[:address]).take(2).each do |address_line|
+
               xml.StreetLines address_line
             end
+
             xml.City @shipper[:city]
             xml.StateOrProvinceCode @shipper[:state]
             xml.PostalCode @shipper[:postal_code]
@@ -234,6 +244,7 @@ module Fedex
       # Add customs clearance(for international shipments)
       def add_customs_clearance(xml)
         xml.CustomsClearanceDetail{
+
           hash_to_xml(xml, @customs_clearance)
         }
       end
@@ -271,11 +282,12 @@ module Fedex
 
       # Parse response, convert keys to underscore symbols
       def parse_response(response)
-        response = sanitize_response_keys(response)
+        response = sanitize_response_keys(response) if response
       end
 
       # Recursively sanitizes the response object by cleaning up any hash keys.
       def sanitize_response_keys(response)
+
         if response.is_a?(Hash)
           response.inject({}) { |result, (key, value)| result[underscorize(key).to_sym] = sanitize_response_keys(value); result }
         elsif response.is_a?(Array)
