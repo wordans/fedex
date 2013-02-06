@@ -12,14 +12,10 @@ module Fedex
 
       # Sends post request to Fedex web service and parse the response, a Rate object is created if the response is successful
       def process_request
+
         api_response = self.class.post(api_url, :body => build_xml)
-
-        DEBUG_LOGGER.info build_xml.html_safe
-
         puts api_response if @debug
         response = parse_response(api_response)
-
-        DEBUG_LOGGER.ap response
 
         if success?(response)
           rate_details = [response[:rate_reply][:rate_reply_details][:rated_shipment_details]].flatten.first[:shipment_rate_detail]
