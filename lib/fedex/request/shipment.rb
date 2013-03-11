@@ -22,10 +22,11 @@ module Fedex
       # The parsed Fedex response is available in #response_details
       # e.g. response_details[:completed_shipment_detail][:completed_package_details][:tracking_ids][:tracking_number]
       def process_request
-        DEBUG_LOGGER.info build_xml.html_safe
+
         api_response = self.class.post api_url, body: build_xml
 
         puts api_response if @debug
+
         response = parse_response(api_response)
         if success?(response)
           success_response(api_response, response)
@@ -51,7 +52,6 @@ module Fedex
           add_custom_components(xml)
           xml.RateRequestTypes "ACCOUNT"
           add_packages(xml)
-
         }
       end
 
@@ -71,7 +71,7 @@ module Fedex
 
       # Callback used after a failed shipment response.
       def failure_response(api_response, response)
-        DEBUG_LOGGER.ap api_response
+
         error_message = if response[:process_shipment_reply]
           [response[:process_shipment_reply][:notifications]].flatten.first[:message]
         else
@@ -83,6 +83,7 @@ module Fedex
       # Callback used after a successful shipment response.
       def success_response(api_response, response)
         @response_details = response[:process_shipment_reply]
+
       end
 
       # Build xml Fedex Web Service request

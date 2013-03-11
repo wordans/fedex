@@ -167,10 +167,20 @@ module Fedex
 
       # Add packages to xml request
       def add_packages(xml)
-        package_count = @packages.size
-        xml.PackageCount package_count
+        xml.MasterTrackingId{
+
+          xml.TrackingIdType @shipping_options[:master_tracking][:tracking_id_type]
+          xml.FormId @shipping_options[:master_tracking][:form_id]
+          xml.TrackingNumber @shipping_options[:master_tracking][:tracking_number]
+
+        } if @shipping_options[:master_tracking]_L
+
+        xml.PackageCount @shipping_options[:package_count]
+
         @packages.each do |package|
-          xml.RequestedPackageLineItems{
+
+            xml.RequestedPackageLineItems{
+            xml.SequenceNumber @shipping_options[:sequence_number] if  @shipping_options[:sequence_number]
             xml.GroupPackageCount 1
             xml.Weight{
               xml.Units package[:weight][:units]
@@ -188,7 +198,7 @@ module Fedex
               xml.CustomerReferences{
               package[:customer_refrences].each do |value|
                  xml.CustomerReferenceType 'CUSTOMER_REFERENCE'
-                 xml.Value                 value
+                 xml.Value value
               end
               }
             end
