@@ -173,7 +173,7 @@ module Fedex
           xml.FormId @shipping_options[:master_tracking][:form_id]
           xml.TrackingNumber @shipping_options[:master_tracking][:tracking_number]
 
-        } if @shipping_options[:master_tracking]_L
+        } if @shipping_options[:master_tracking]
 
         xml.PackageCount @shipping_options[:package_count]
 
